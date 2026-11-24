@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Following the Climate</title>
+<meta name="description" content="Climate connectivity of Europe's protected areas at 250 m: corridors, links, pinch points and barriers today and in 2061-2080. MSc thesis, University of Groningen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
+<style>
+:root{
+  --bg:#f3f5f2; --panel:#ffffff; --fg:#1d2621; --muted:#5d6a62; --line:#d9e0da; --accent:#2166ac;
+  --keep:#00441b; --reach:#2b8cbe; --far:#e08214; --none:#d6604d; --link:#2166ac; --cross:#cb181d; --barrier:#7b1a1a; --pinch:#e8000b; --net:#1b7f6b; --hop1:#ff7f00; --hop5:#ffd27f;
+  --f-head:"Instrument Sans",system-ui,sans-serif; --f-body:"Inter",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121614; --panel:#1a201d; --fg:#e4ebe6; --muted:#9aa8a0; --line:#2c3531; --accent:#6aa9e0; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121614; --panel:#1a201d; --fg:#e4ebe6; --muted:#9aa8a0; --line:#2c3531; --accent:#6aa9e0; color-scheme:dark}
+*{box-sizing:border-box} html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45}
+.app{height:100%;display:grid;grid-template-columns:350px 1fr;min-height:0}
+.panel{background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;min-width:0;padding:18px 16px 24px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+#map{position:absolute;inset:0;background:var(--bg)}
+.mapwrap{position:relative;min-height:0}
+h1{font-family:var(--f-head);font-size:22px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:6px 0 0;font-size:13px}
+.blk{display:flex;flex-direction:column;gap:7px}
+.lab{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.seg{display:grid;grid-template-columns:repeat(var(--n,3),1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:500 12.5px var(--f-body);padding:8px 3px;border:0;background:transparent;color:var(--fg);cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--panel)}
+.seg button:disabled{opacity:.35;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tog{display:flex;align-items:center;gap:10px;cursor:pointer;padding:2px 0}
+.tog input{width:16px;height:16px;accent-color:var(--accent);margin:0}
+.tog.off{opacity:.4;pointer-events:none}
+.sub-blk{display:flex;flex-direction:column;gap:5px;padding-left:26px}
+.sub-blk.off{opacity:.4;pointer-events:none}
+.sw{width:12px;height:12px;border-radius:50%;flex:none;display:inline-block}
+.sw.sq{border-radius:2px} .sw.line{height:3px;border-radius:2px;width:16px} .sw.tri{width:0;height:0;border-radius:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid var(--pinch);background:none}
+.note{font-size:12px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-variant-numeric:tabular-nums}
+.stat .v{font-family:var(--f-mono);font-size:16px;font-weight:500}
+.stat .k{font-size:11.5px;color:var(--muted)}
+.bar{display:flex;height:10px;border-radius:5px;overflow:hidden;grid-column:1/-1}
+.legend{display:flex;flex-direction:column;gap:5px;font-size:12.5px}
+.legend div{display:flex;align-items:center;gap:8px}
+.ramp{height:10px;width:100%;border-radius:3px;background:linear-gradient(90deg,#0000FF 0 20%,#00BFFF 20% 40%,#32CD32 40% 60%,#FFD700 60% 80%,#FF0000 80%)}
+select{font:13px var(--f-body);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
+.foot{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.hop{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;display:none}
+.hop.on{display:block}
+.loading{position:absolute;top:12px;right:12px;z-index:5;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:12px}
+.maplibregl-popup-content{background:var(--panel);color:var(--fg);font-family:var(--f-body);padding:10px 12px}
+.maplibregl-popup-tip{border-top-color:var(--panel)!important;border-bottom-color:var(--panel)!important}
+.pp h3{font-family:var(--f-head);font-size:15px;margin:0 0 4px}
+.pp table{border-collapse:collapse;font-variant-numeric:tabular-nums;margin-top:4px}
+.pp td{padding:1px 8px 1px 0;font-size:12.5px}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:60vh auto;height:auto;min-height:100%}
+  .panel{border-right:0;border-top:1px solid var(--line);order:2}
+  .mapwrap{order:1;height:60vh}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel" aria-label="Map controls">
+    <div>
+      <h1>Following the climate</h1>
+      <p class="sub">Climate connectivity of Europe's protected areas at 250 m: today's network, and where their climate goes in 2061–2080 with the corridors, pinch points and barriers on the way. MSc thesis, University of Groningen.</p>
+    </div>
+    <div class="blk"><span class="lab" id="lb-scen">Scenario</span>
+      <div class="seg" style="--n:4" role="group" aria-labelledby="lb-scen" id="scen">
+        <button data-v="present" aria-pressed="true">Present</button><button data-v="ssp126" aria-pressed="false">SSP1-2.6</button><button data-v="ssp245" aria-pressed="false">SSP2-4.5</button><button data-v="ssp585" aria-pressed="false">SSP5-8.5</button>
+      </div></div>
+    <div class="blk"><span class="lab" id="lb-grp">Species group</span>
+      <div class="seg" style="--n:4" role="group" aria-labelledby="lb-grp" id="grp">
+        <button data-v="amph" aria-pressed="false">Amph. &amp; rept.</button><button data-v="mam" aria-pressed="true">Mammals</button><button data-v="bird" aria-pressed="false">Birds</button><button data-v="all" aria-pressed="false">All combined</button>
+      </div></div>
+    <div class="blk" id="evblk"><span class="lab" id="lb-ev">Dispersal events</span>
+      <div class="seg" style="--n:2" role="group" aria-labelledby="lb-ev" id="ev">
+        <button data-v="k1" aria-pressed="true">1 event</button><button data-v="k5" aria-pressed="false">5 events</button>
+      </div><span class="note" id="evnote"></span></div>
+    <div class="blk"><span class="lab">Layers</span>
+      <label class="tog"><input type="checkbox" id="l-cur" checked><span class="sw sq" style="background:linear-gradient(90deg,#0000FF,#00BFFF,#32CD32,#FFD700,#FF0000)"></span>Corridor current</label>
+      <label class="tog"><input type="checkbox" id="l-links" checked><span class="sw line" style="background:var(--link)"></span><span id="t-links">Links (least-cost paths)</span></label>
+      <label class="tog" style="padding-left:26px"><input type="checkbox" id="l-cross"><span class="sw line" style="background:var(--cross)"></span>Only links that cross a border</label>
+      <label class="tog"><input type="checkbox" id="l-pin" checked><span class="sw" style="background:var(--pinch)"></span>Pinch points</label>
+      <label class="tog"><input type="checkbox" id="l-bar" checked><span class="sw" style="background:var(--barrier)"></span>Barriers</label>
+      <label class="tog"><input type="checkbox" id="l-pa" checked><span class="sw" style="background:var(--keep)"></span>Protected areas</label>
+      <div class="sub-blk" id="pashapeblk">
+        <div class="seg" style="--n:2" role="group" aria-label="Protected areas shown as" id="pashape">
+          <button data-v="dot" aria-pressed="true">Dots</button><button data-v="poly" aria-pressed="false">Real shapes</button>
+        </div><span class="note" id="pashapenote"></span></div>
+      <label class="tog" id="tg-net"><input type="checkbox" id="l-net"><span class="sw line" style="background:var(--net)"></span>Network today (extra layer)</label>
+    </div>
+    <div class="blk" id="schblk"><span class="lab" id="lb-sch">Current classes</span>
+      <div class="seg" style="--n:2" role="group" aria-labelledby="lb-sch" id="sch">
+        <button data-v="sep" aria-pressed="true">Per scenario</button><button data-v="pool" aria-pressed="false">Same for all scenarios</button>
+      </div></div>
+    <div class="blk"><span class="lab">Legend</span><div class="legend" id="legend"></div></div>
+    <div class="hop" id="hop" aria-live="polite"></div>
+    <div class="blk"><span class="lab" id="stat-title">Summary</span><div class="stats" id="stats"></div></div>
+    <div class="blk"><span class="lab">Background</span>
+      <select id="bg" aria-label="Background map"><option value="osm" selected>OpenStreetMap</option><option value="none">Plain</option></select></div>
+    <p class="foot" id="foot">Click a protected area, link, pinch point or barrier for details. In <b>Present</b>, clicking a protected area shows the areas reachable along the network within 1 hop (orange) and 5 hops (light orange); press Esc to clear. Protected areas can be shown as <b>dots</b> (size = area) or as their <b>real shapes</b>: the protected land of each climate type, exactly as it was used in the model (overlapping or touching sites merged, parts smaller than 1 km² left out). Corridor current: Linkage Mapper style, class 1 (low, blue) to 5 (high, red), natural breaks. Groups: amphibians &amp; reptiles 5 km, mammals 50 km, birds 100 km dispersal; 1 event = one dispersal distance, 5 events = five (gap to the analog area). <b>All combined</b> = mean class of the four groups (amphibians and reptiles both count; no corridor = class 1). 23,391 protected-area nodes (WDPA + Natura 2000, ≥ 1 km², per climate type); future climate 2061–2080, mean of 4 CMIP6 models. F. Rodenburg, University of Groningen, 2026. <span id="built"></span></p>
+  </aside>
+  <div class="mapwrap"><div id="map" aria-label="Map of Europe"></div><div class="loading" id="loading">Loading…</div></div>
+</div>
+<script>
+"use strict";
+const GN={amph:'Amphibians & reptiles',mam:'Mammals',bird:'Birds',all:'All groups combined'};
+const SN={present:'Present',ssp126:'SSP1-2.6',ssp245:'SSP2-4.5',ssp585:'SSP5-8.5'};
+const LIM={amph:{k1:5,k5:25},mam:{k1:50,k5:250},bird:{k1:100,k5:500}};
+const PAL=[[0,0,255],[0,191,255],[50,205,50],[255,215,0],[255,0,0]];
+const POLY_MINZ=5;            // the shape tiles start at this zoom; zoomed further out the protected areas are dots
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const st={scen:'present',grp:'mam',ev:'k1',sch:'sep',pashape:'dot',hopFrom:null};
+let HASPOLY=false;
+const $=id=>document.getElementById(id);
+const fmt=(v,d=0)=>v==null||Number.isNaN(v)?'–':(+v).toLocaleString('en-GB',{maximumFractionDigits:d,minimumFractionDigits:d});
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const base=new URL('.',location.href).href;
+const turl=f=>base+'tiles/'+f+'.pmtiles';
+let SUM={},MAN=null,PAS={},ADJ={};
+const getJSON=async f=>{const r=await fetch(base+'data/'+f);if(!r.ok)throw new Error(f);return r.json();};
+
+/* ---------- tiles: vector via pmtiles protocol, raster classes re-coloured in the browser ---------- */
+const protocol=new pmtiles.Protocol(); maplibregl.addProtocol('pmtiles',protocol.tile);
+const PM={}; const getPM=f=>PM[f]||(PM[f]=new pmtiles.PMTiles(turl(f)));
+let EMPTY=null;
+/* canvas helpers: OffscreenCanvas where available, a normal canvas otherwise (older Safari) */
+const mkCanvas=(w,h)=>{ if(typeof OffscreenCanvas!=='undefined') return new OffscreenCanvas(w,h); const c=document.createElement('canvas'); c.width=w; c.height=h; return c; };
+const toPNG=async c=>c.convertToBlob?await (await c.convertToBlob({type:'image/png'})).arrayBuffer():await new Promise(r=>c.toBlob(b=>b.arrayBuffer().then(r),'image/png'));
+async function emptyTile(){ if(EMPTY) return EMPTY; const c=mkCanvas(256,256); c.getContext('2d'); EMPTY=await toPNG(c); return EMPTY; }
+maplibregl.addProtocol('cls', async (params, ac) => {
+  const m=params.url.match(/^cls:\/\/([^/]+)\/(\d+)\/(\d+)\/(\d+)\?s=(\w+)/); if(!m) throw new Error('bad url');
+  const [,f,z,x,y,s]=m; let r=null;
+  try{ r=await getPM(f).getZxy(+z,+x,+y,ac&&ac.signal); }catch(e){ r=null; }
+  if(!r||!r.data) return {data:(await emptyTile()).slice(0)};
+  const bmp=await createImageBitmap(new Blob([r.data],{type:'image/png'}),{premultiplyAlpha:'none',colorSpaceConversion:'none'});
+  const c=mkCanvas(bmp.width,bmp.height), g=c.getContext('2d',{willReadFrequently:true}); g.drawImage(bmp,0,0);
+  const im=g.getImageData(0,0,bmp.width,bmp.height), d=im.data;
+  for(let i=0;i<d.length;i+=4){ const v=d[i]; const k=s==='pool'?(v>>3)&7:v&7; if(!k||k>5){d[i+3]=0;continue;} const p=PAL[k-1]; d[i]=p[0];d[i+1]=p[1];d[i+2]=p[2];d[i+3]=235; }
+  g.putImageData(im,0,0); return {data:await toPNG(c)};
+});
+
+/* ---------- map ---------- */
+const map=new maplibregl.Map({container:'map',center:[10,51],zoom:4,minZoom:3,maxZoom:14,hash:true,attributionControl:{compact:true},
+  style:{version:8,sources:{osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · Data: F. Rodenburg 2026 (WDPA, Natura 2000, CHELSA/CMIP6, Human Footprint)'}},
+    layers:[{id:'bgc',type:'background',paint:{'background-color':'#f3f5f2'}},{id:'osm',type:'raster',source:'osm',paint:{'raster-saturation':-0.6,'raster-opacity':0.85}}]}});
+map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-left');
+map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-left');
+const DYN=[]; // ids of dynamic layers/sources
+function clearDyn(){ for(const id of DYN.filter(x=>x.t==='l').map(x=>x.id)) if(map.getLayer(id)) map.removeLayer(id);
+  for(const id of DYN.filter(x=>x.t==='s').map(x=>x.id)) if(map.getSource(id)) map.removeSource(id); DYN.length=0; }
+const addS=(id,s)=>{ if(!map.getSource(id)) map.addSource(id,s); DYN.push({t:'s',id}); };
+const addL=(l,before)=>{ map.addLayer(l,before); DYN.push({t:'l',id:l.id}); };
+const vis=on=>on?'visible':'none';
+
+function files(){
+  const s=st.scen,g=st.grp,k=st.ev;
+  if(s==='present') return {cur:`cur_present_${g}`, links: g==='all'?['vec_present_amph','vec_present_mam','vec_present_bird']:[`vec_present_${g}`], pts:`vec_present_${g}`};
+  return {cur:`cur_${s}_${g}_${k}`, links:[`vec_${s}_${g==='all'?'bird':g}_${k}`], pts:`vec_${s}_${g}_${k}`};
+}
+function rebuild(){
+  clearDyn(); const F=files(), lyr=id=>$(id).checked;
+  addS('cur',{type:'raster',tiles:[`cls://${F.cur}/{z}/{x}/{y}?s=${st.sch}`],tileSize:256,minzoom:MAN?MAN.min_zoom:4,maxzoom:MAN?MAN.max_zoom:9});
+  addL({id:'cur',type:'raster',source:'cur',layout:{visibility:vis(lyr('l-cur'))},paint:{'raster-resampling':'nearest','raster-opacity':0.85,'raster-fade-duration':0}});
+  if(st.scen!=='present'){ const ng=st.grp==='all'?'mam':st.grp; addS('net',{type:'vector',url:'pmtiles://'+turl(`vec_present_${ng}`)});
+    addL({id:'net',type:'line',source:'net','source-layer':'links',layout:{visibility:vis(lyr('l-net'))},paint:{'line-color':cssv('--net'),'line-width':['interpolate',['linear'],['zoom'],4,0.4,10,1.6],'line-opacity':0.7}}); }
+  paPolyLayer();   // real shapes sit under the links, pinch points and barriers
+  F.links.forEach((f,i)=>{ const sid='lk'+i; addS(sid,{type:'vector',url:'pmtiles://'+turl(f)});
+    addL({id:'links'+i,type:'line',source:sid,'source-layer':'links',filter:lyr('l-cross')?['==',['get','cb'],1]:['has','t'],layout:{visibility:vis(lyr('l-links')),'line-cap':'round'},
+      paint:{'line-color':lyr('l-cross')?cssv('--cross'):cssv('--link'),'line-width':['interpolate',['linear'],['zoom'],4,0.5,8,1.2,12,2.5],'line-opacity':0.75}}); });
+  addS('pts',{type:'vector',url:'pmtiles://'+turl(F.pts)});
+  addL({id:'bar',type:'circle',source:'pts','source-layer':'barrier',layout:{visibility:vis(lyr('l-bar'))},paint:{'circle-color':cssv('--barrier'),'circle-radius':['interpolate',['linear'],['zoom'],4,1.5,10,4.5],'circle-stroke-color':'#fff','circle-stroke-width':0.5}});
+  addL({id:'pin',type:'circle',source:'pts','source-layer':'pinch',layout:{visibility:vis(lyr('l-pin'))},paint:{'circle-color':cssv('--pinch'),'circle-radius':['interpolate',['linear'],['zoom'],4,1.3,10,4],'circle-stroke-color':'#fff','circle-stroke-width':0.5}});
+  paLayer(); updateUI();
+}
+
+/* ---------- protected areas ---------- */
+function paCat(P,i){
+  if(st.scen==='present'){ const n=st.grp==='all'?P.l.amph[i]+P.l.mam[i]+P.l.bird[i]:P.l[st.grp][i]; return n===0?0:n<=2?1:n<=5?2:n<=10?3:4; }
+  const s=P.s[i], gp=P.gp[i];
+  if(s<=2) return 0; if(s===4) return 3;
+  if(st.grp==='all'){ const n=['amph','mam','bird'].filter(g=>gp!=null&&gp<=LIM[g][st.ev]).length; return n===3?1:n>0?4:2; }
+  return (gp!=null&&gp<=LIM[st.grp][st.ev])?1:2;
+}
+const CATC_PRES=['#d6604d','#c6dbef','#6baed6','#2171b5','#08306b'];
+const CATC_FUT=()=>[cssv('--keep'),cssv('--reach'),cssv('--far'),cssv('--none'),'#9ecae1'];
+const polyOn=()=>st.pashape==='poly'&&HASPOLY;
+function paLayer(){
+  const P=PAS[st.scen]; if(!P) return;
+  const feats=P.lon.map((x,i)=>({type:'Feature',id:i,geometry:{type:'Point',coordinates:[x,P.lat[i]]},properties:{a:P.a[i],c:paCat(P,i)}}));
+  addS('pas',{type:'geojson',data:{type:'FeatureCollection',features:feats}});
+  const cols=st.scen==='present'?CATC_PRES:CATC_FUT(); const m=['match',['get','c']]; cols.forEach((c,k)=>m.push(k,c)); m.push('#888');
+  /* dots: size grows with the area; with "Real shapes" they are only drawn while zoomed out (below POLY_MINZ) */
+  addL({id:'pas',type:'circle',source:'pas',maxzoom:polyOn()?POLY_MINZ:24,layout:{visibility:vis($('l-pa').checked)},paint:{
+    'circle-color':m,'circle-opacity':0.9,
+    'circle-radius':['interpolate',['linear'],['zoom'],4,['min',7,['+',1.5,['*',0.1,['sqrt',['get','a']]]]],10,['min',24,['+',4,['*',0.5,['sqrt',['get','a']]]]]],
+    'circle-stroke-color':['case',['>',['coalesce',['feature-state','hop'],0],0],['case',['==',['feature-state','hop'],1],cssv('--hop1'),['==',['feature-state','hop'],9],'#000',cssv('--hop5')],'#ffffff'],
+    'circle-stroke-width':['case',['>',['coalesce',['feature-state','hop'],0],0],3,0.6]}});
+  addS('hopl',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  addL({id:'hopl',type:'line',source:'hopl',paint:{'line-color':['match',['get','h'],1,cssv('--hop1'),cssv('--hop5')],'line-width':2.2,'line-opacity':0.9}},'pas');
+}
+/* real shapes: tiles/pa_polygons.pmtiles, layer "present" (attribute i = row in pas_present.json) and
+   layer "future" (i126 / i245 / i585 = row in pas_<ssp>.json). Colour = the same class as the dots. */
+const paIdx=()=>st.scen==='present'?'i':'i'+st.scen.slice(3);
+function paColorExpr(){
+  const P=PAS[st.scen], cols=st.scen==='present'?CATC_PRES:CATC_FUT(), lists=cols.map(()=>[]);
+  for(let i=0;i<P.lon.length;i++){ const c=paCat(P,i); if(lists[c]) lists[c].push(i); }
+  const e=['match',['get',paIdx()]]; lists.forEach((l,k)=>{ if(l.length) e.push(l,cols[k]); }); e.push('#888'); return e;
+}
+function paPolyLayer(){
+  if(!polyOn()||!PAS[st.scen]) return;
+  const sl=st.scen==='present'?'present':'future', col=paColorExpr(), on=vis($('l-pa').checked), pres=st.scen==='present';
+  addS('pap',{type:'vector',url:'pmtiles://'+turl('pa_polygons'),promoteId:{present:'i'}});
+  const hop=(a,b)=>pres?['case',['>',['coalesce',['feature-state','hop'],0],0],a,b]:b;
+  const hopCol=['case',['==',['feature-state','hop'],1],cssv('--hop1'),['==',['feature-state','hop'],9],'#000',cssv('--hop5')];
+  addL({id:'pap-fill',type:'fill',source:'pap','source-layer':sl,minzoom:POLY_MINZ,filter:['has',paIdx()],layout:{visibility:on},
+    paint:{'fill-color':col,'fill-opacity':['interpolate',['linear'],['zoom'],POLY_MINZ,0.8,12,0.55]}});
+  addL({id:'pap-line',type:'line',source:'pap','source-layer':sl,minzoom:POLY_MINZ,filter:['has',paIdx()],layout:{visibility:on,'line-join':'round'},
+    paint:{'line-color':hop(hopCol,col),'line-width':hop(3,['interpolate',['linear'],['zoom'],POLY_MINZ,0.3,12,1.4]),'line-opacity':0.95}});
+}
+
+/* ---------- click-to-hop (present) ---------- */
+function clearHop(){ if(st.hopFrom==null) return; map.removeFeatureState({source:'pas'}); if(map.getSource('pap')) map.removeFeatureState({source:'pap',sourceLayer:'present'});
+  const s=map.getSource('hopl'); if(s) s.setData({type:'FeatureCollection',features:[]}); st.hopFrom=null; $('hop').className='hop'; }
+function doHop(i){
+  clearHop(); const P=PAS.present; if(!P) return;
+  const gs=st.grp==='all'?['amph','mam','bird']:[st.grp]; const nb=new Map();
+  for(const g of gs){ const e=ADJ[g]; if(!e) continue; for(let k=0;k<e.length;k+=2){ const a=e[k],b=e[k+1]; (nb.get(a)||nb.set(a,[]).get(a)).push(b); (nb.get(b)||nb.set(b,[]).get(b)).push(a);} }
+  const start=[i]; if(P.c[i]) P.c.forEach((c,j)=>{ if(c===P.c[i]&&j!==i) start.push(j); });
+  const dist=new Map(start.map(j=>[j,0])); let fr=start.slice(); const lines=[];
+  for(let h=1;h<=5;h++){ const nx=[]; for(const a of fr) for(const b of (nb.get(a)||[])) if(!dist.has(b)){ dist.set(b,h); nx.push(b); lines.push({type:'Feature',properties:{h:h===1?1:5},geometry:{type:'LineString',coordinates:[[P.lon[a],P.lat[a]],[P.lon[b],P.lat[b]]]}}); } fr=nx; if(!fr.length) break; }
+  const pap=!!map.getSource('pap');
+  let n1=0,a1=0,n5=0,a5=0; for(const [j,h] of dist){ const s={hop:h===0?9:h===1?1:5}; map.setFeatureState({source:'pas',id:j},s); if(pap) map.setFeatureState({source:'pap',sourceLayer:'present',id:j},s);
+    if(h>=1){ n5++; a5+=P.a[j]; if(h===1){n1++;a1+=P.a[j];} } }
+  map.getSource('hopl').setData({type:'FeatureCollection',features:lines}); st.hopFrom=i;
+  $('hop').className='hop on';
+  $('hop').innerHTML=`<b>${esc(P.n[i]||'Protected area')}</b> (${GN[st.grp]}, climate type ${P.t[i]})<br>Within 1 hop: <b>${fmt(n1)}</b> protected areas, ${fmt(a1)} km²<br>Within 5 hops: <b>${fmt(n5)}</b> protected areas, ${fmt(a5)} km²<br><span class="note">Hops follow the network links of the same climate type. Esc = clear.</span>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') clearHop(); });
+
+/* ---------- popups ---------- */
+const popup=new maplibregl.Popup({closeButton:true,maxWidth:'300px'});
+map.on('click',e=>{
+  const L=['pas','pap-fill','pin','bar','net','links0','links1','links2'].filter(id=>map.getLayer(id)&&map.getLayoutProperty(id,'visibility')!=='none');
+  const fs=map.queryRenderedFeatures([[e.point.x-4,e.point.y-4],[e.point.x+4,e.point.y+4]],{layers:L});
+  if(!fs.length){ clearHop(); return; }
+  const isPA=x=>x.layer.id==='pas'||x.layer.id==='pap-fill';
+  const pick=ids=>fs.find(x=>ids.includes(x.layer.id));   // dot > pinch point / barrier > link > real shape
+  const f=pick(['pas'])||pick(['pin','bar'])||pick(['links0','links1','links2','net'])||pick(['pap-fill'])||fs[0], p=f.properties; let h='';
+  if(isPA(f)){ const P=PAS[st.scen], i=f.layer.id==='pas'?f.id:+p[paIdx()];
+    if(P==null||!(i>=0&&i<P.lon.length)) return;
+    h=`<h3>${esc(P.n[i]||'Protected area')}</h3><table><tr><td>Area</td><td>${fmt(P.a[i],1)} km²</td></tr><tr><td>Climate type</td><td>${P.t[i]}</td></tr><tr><td>Country</td><td>${esc(P.cc[i]||'–')}</td></tr>`;
+    if(st.scen==='present') h+=`<tr><td>Links</td><td>amph./rept. ${P.l.amph[i]} · mammals ${P.l.mam[i]} · birds ${P.l.bird[i]}</td></tr>`;
+    else { const sn=['','stays','shrinks','moves','no analog within 500 km'][P.s[i]]; h+=`<tr><td>Status</td><td>${sn}</td></tr><tr><td>Keeps its climate</td><td>${fmt(100*P.k[i])}%</td></tr>`;
+      if(P.s[i]===3) h+=`<tr><td>Gap to analog</td><td>${fmt(P.gp[i],1)} km${P.cd&&P.cd[i]&&P.cd[i]!==P.cc[i]?' (in '+esc(P.cd[i])+')':''}</td></tr>`;
+      if(P.s[i]===3) h+=`<tr><td>Reached by</td><td>${['amph','mam','bird'].map(g=>`${g==='amph'?'amph./rept.':g==='mam'?'mammals':'birds'} ${P.gp[i]<=LIM[g][st.ev]?'✓':'✗'}`).join(' · ')}</td></tr>`; }
+    h+='</table>'; if(st.scen==='present') doHop(i);
+  } else if(f.layer.id==='pin'||f.layer.id==='bar'){ h=`<h3>${f.layer.id==='pin'?'Pinch point':'Barrier'}</h3><table>${p.area_km2!=null?`<tr><td>Area</td><td>${fmt(p.area_km2,2)} km²</td></tr>`:''}${p.score!=null?`<tr><td>Restoration score</td><td>${fmt(p.score,1)}</td></tr>`:''}${p.t!=null?`<tr><td>Climate type</td><td>${p.t}</td></tr>`:''}</table>`;
+  } else { h=`<h3>${f.layer.id==='net'?'Network link (today)':st.scen==='present'?'Network link':'Analog link'}</h3><table><tr><td>Cost distance</td><td>${fmt(p.c,1)} km of reference land</td></tr><tr><td>Path length</td><td>${fmt(p.p,1)} km</td></tr><tr><td>Gap</td><td>${fmt(p.gp,1)} km</td></tr><tr><td>Climate type</td><td>${p.t}</td></tr><tr><td>Countries</td><td>${esc(p.c1||'?')} → ${esc(p.c2||'?')}${+p.cb===1?' (crosses a border)':''}</td></tr></table>`; }
+  popup.setLngLat(e.lngLat).setHTML(`<div class="pp">${h}</div>`).addTo(map);
+});
+['pas','pap-fill','pin','bar','links0','links1','links2','net'].forEach(id=>{ map.on('mouseenter',id,()=>map.getCanvas().style.cursor='pointer'); map.on('mouseleave',id,()=>map.getCanvas().style.cursor=''); });
+
+/* ---------- panel ---------- */
+function legend(){
+  const sw=(c,t,cl='')=>`<div><span class="sw ${cl}" style="background:${c}"></span>${t}</div>`; let h=`<div style="flex-direction:column;align-items:stretch;gap:2px"><div class="ramp"></div><div style="justify-content:space-between;font-size:11px;color:var(--muted)"><span>class 1 (low current)</span><span>class 5 (high)</span></div></div>`;
+  const shp=polyOn()?'sq':'';
+  if(st.scen==='present'){ h+=`<div class="note">Protected areas: number of network links (${GN[st.grp]})</div>`; ['isolated (0)','1–2','3–5','6–10','more than 10'].forEach((t,k)=>h+=sw(CATC_PRES[k],t,shp)); }
+  else { const C=CATC_FUT(); h+=`<div class="note">Protected areas, ${GN[st.grp]}, ${st.ev==='k1'?'1 dispersal event':'5 dispersal events'}:</div>`+sw(C[0],'Keeps its climate (stays or shrinks)',shp);
+    if(st.grp==='all') h+=sw(C[1],'Analog reachable for all groups',shp)+sw(C[4],'Reachable for some groups',shp)+sw(C[2],'Analog too far for all groups',shp);
+    else h+=sw(C[1],`Analog within reach (gap ≤ ${LIM[st.grp][st.ev]} km)`,shp)+sw(C[2],'Analog too far away',shp);
+    h+=sw(C[3],'No analog within 500 km',shp); }
+  h+=`<div class="note">${polyOn()?`Real shapes from zoom ${POLY_MINZ}; zoomed further out they are dots.`:'Dot size grows with the area of the protected area.'}</div>`;
+  h+=sw(cssv('--pinch'),'Pinch point')+sw(cssv('--barrier'),'Barrier (restoring it helps most)'); $('legend').innerHTML=h;
+}
+function stats(){
+  const key=st.scen==='present'?`present|${st.grp}`:`${st.scen}|${st.grp}|${st.ev}`; const S=SUM[key]; const el=$('stats');
+  $('stat-title').textContent=`Summary · ${SN[st.scen]} · ${GN[st.grp]}${st.scen==='present'?'':' · '+(st.ev==='k1'?'1 event':'5 events')}`;
+  if(!S){ el.innerHTML='<span class="note">No summary for this view.</span>'; return; }
+  const it=(v,k)=>`<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`; let h='';
+  if(S.status){ const C=CATC_FUT(), v=[S.status.stays,S.status.shrinks,S.status.moves,S.status.none], cl=[C[0],'#74c476',cssv('--link'),C[3]];
+    h+=`<div class="bar" role="img" aria-label="Status shares">${v.map((x,k)=>`<span style="width:${x}%;background:${cl[k]}"></span>`).join('')}</div>`;
+    h+=it(`${fmt(S.status.stays,0)}% / ${fmt(S.status.shrinks,0)}%`,'stay / shrink')+it(`${fmt(S.status.moves,0)}% / ${fmt(S.status.none,0)}%`,'must move / no analog');
+    if(S.reach_pct!=null) h+=it(fmt(S.reach_pct,0)+'%',`keep or reach their climate (gap ≤ ${S.limit_km} km)`);
+    if(S.reach_all_pct!=null) h+=it(`${fmt(S.reach_all_pct,0)}% / ${fmt(S.reach_any_pct,0)}%`,'keep or reach it: all groups / any group'); }
+  h+=it(fmt(S.links),'links')+it(fmt(S.nodes),'protected-area nodes');
+  if(S.cost_med!=null) h+=it(`${fmt(S.cost_med,1)} / ${fmt(S.cost_mean,1)}`,'path cost, median / mean (km of reference land)')+it(`${fmt(S.path_med,1)} / ${fmt(S.path_mean,1)}`,'path length, median / mean (km)');
+  h+=it(`${fmt(S.barrier_n)} · ${fmt(S.barrier_km2)} km²`,'barriers (patches · area)')+it(`${fmt(S.pinch_n)} · ${fmt(S.pinch_km2)} km²`,'pinch points (patches · area)');
+  if(S.cross_pct!=null) h+=it(fmt(S.cross_pct,1)+'%','links that cross a border');
+  if(S.isolated!=null) h+=it(fmt(S.isolated),'isolated protected areas (no link)');
+  if(S.components!=null) h+=it(fmt(S.components),'separate networks (sum over climate types)');
+  if(S.largest_pct!=null) h+=it(fmt(S.largest_pct,0)+'%','PA area in the largest network (median per type)');
+  if(S.corridor_km2!=null) h+=it(fmt(S.corridor_km2)+' km²','corridor area');
+  el.innerHTML=h;
+}
+function updateUI(){
+  const pres=st.scen==='present';
+  $('ev').querySelectorAll('button').forEach(b=>b.disabled=pres); $('sch').querySelectorAll('button[data-v="pool"]').forEach(b=>b.disabled=pres);
+  $('evnote').textContent=pres?'Present: click a protected area to see 1 and 5 hops along the network.':st.grp==='all'?'Links shown: birds (they include the shorter links).':`Links up to a gap of ${LIM[st.grp][st.ev]} km.`;
+  $('tg-net').classList.toggle('off',pres); $('t-links').textContent=pres?'Network links (least-cost paths)':'Analog links (least-cost paths)';
+  $('pashapeblk').classList.toggle('off',!$('l-pa').checked);
+  $('pashape').querySelector('button[data-v="poly"]').disabled=!HASPOLY;
+  $('pashapenote').textContent=!HASPOLY?'Real shapes are not available yet.':st.pashape==='poly'?`Real shapes from zoom ${POLY_MINZ} (zoom in); each shape is the protected land of one climate type, as in the model.`:'Dot size grows with the area.';
+  legend(); stats();
+}
+function seg(id,key){ $(id).addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; st[key]=b.dataset.v;
+  $(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false')); if(key==='scen'&&st.scen==='present'){ st.sch='sep'; $('sch').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v==='sep'?'true':'false')); }
+  clearHop(); popup.remove(); ensurePAs().then(rebuild); }); }
+seg('scen','scen'); seg('grp','grp'); seg('ev','ev'); seg('sch','sch'); seg('pashape','pashape');
+const LMAP={'l-cur':['cur'],'l-links':['links0','links1','links2'],'l-pin':['pin'],'l-bar':['bar'],'l-pa':['pas','hopl','pap-fill','pap-line'],'l-net':['net']};
+Object.entries(LMAP).forEach(([cb,ids])=>$(cb).addEventListener('change',()=>{ ids.forEach(id=>map.getLayer(id)&&map.setLayoutProperty(id,'visibility',vis($(cb).checked))); if(cb==='l-pa') updateUI(); }));
+$('l-cross').addEventListener('change',()=>rebuild());
+$('bg').addEventListener('change',e=>map.setLayoutProperty('osm','visibility',e.target.value==='osm'?'visible':'none'));
+async function ensurePAs(){ const s=st.scen; if(!PAS[s]){ $('loading').hidden=false; try{ PAS[s]=await getJSON(`pas_${s}.json`); }catch(e){ console.warn(e); } $('loading').hidden=true; } }
+map.on('load',async()=>{
+  try{ [MAN,SUM]=await Promise.all([getJSON('manifest.json'),getJSON('summary.json')]); $('built').textContent='Built '+MAN.built+'.'; }catch(e){ console.warn(e); }
+  const [a,m,b]=await Promise.all(['amph','mam','bird'].map(g=>getJSON(`adj_${g}.json`).catch(()=>null))); ADJ={amph:a,mam:m,bird:b};
+  HASPOLY=await fetch(turl('pa_polygons'),{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
+  await ensurePAs(); $('loading').hidden=true; rebuild();
+});
+</script>
+</body>
+</html>

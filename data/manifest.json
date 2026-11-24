@@ -1,0 +1,731 @@
+{
+  "built": "2026-11-22 12:17",
+  "max_zoom": 9,
+  "min_zoom": 4,
+  "groups": [
+    {
+      "g": "amph",
+      "label": "amphibians_r5km",
+      "name": "Amphibians & reptiles",
+      "radius_km": 5,
+      "w": 2
+    },
+    {
+      "g": "mam",
+      "label": "mammals_r50km",
+      "name": "Mammals",
+      "radius_km": 50,
+      "w": 1
+    },
+    {
+      "g": "bird",
+      "label": "birds_r100km",
+      "name": "Birds",
+      "radius_km": 100,
+      "w": 1
+    }
+  ],
+  "limits": {
+    "amph": [5, 25],
+    "mam": [50, 250],
+    "bird": [100, 500]
+  },
+  "breaks": [
+    {
+      "scenario": "ssp126",
+      "group": "amph",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.063481792807579,
+      "b2": 0.129573792219162,
+      "b3": 0.223214894533157,
+      "b4": 0.392806261777878
+    },
+    {
+      "scenario": "ssp126",
+      "group": "amph",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.05086774751544,
+      "b2": 0.101928070187569,
+      "b3": 0.180629052221775,
+      "b4": 0.371960952877998
+    },
+    {
+      "scenario": "ssp245",
+      "group": "amph",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.0520390439778566,
+      "b2": 0.104438599199057,
+      "b3": 0.187698490917683,
+      "b4": 0.374145492911339
+    },
+    {
+      "scenario": "ssp245",
+      "group": "amph",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.05086774751544,
+      "b2": 0.101928070187569,
+      "b3": 0.180629052221775,
+      "b4": 0.371960952877998
+    },
+    {
+      "scenario": "ssp585",
+      "group": "amph",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.0408698804676533,
+      "b2": 0.0871112830936909,
+      "b3": 0.156392402946949,
+      "b4": 0.312569037079811
+    },
+    {
+      "scenario": "ssp585",
+      "group": "amph",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.05086774751544,
+      "b2": 0.101928070187569,
+      "b3": 0.180629052221775,
+      "b4": 0.371960952877998
+    },
+    {
+      "scenario": "ssp126",
+      "group": "amph",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.0591044463217258,
+      "b2": 0.105365492403507,
+      "b3": 0.178810998797417,
+      "b4": 0.331156075000763
+    },
+    {
+      "scenario": "ssp126",
+      "group": "amph",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0563596244901419,
+      "b2": 0.101931624114513,
+      "b3": 0.174843676388264,
+      "b4": 0.332084834575653
+    },
+    {
+      "scenario": "ssp245",
+      "group": "amph",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.0575722251087427,
+      "b2": 0.105553276836872,
+      "b3": 0.186141349375248,
+      "b4": 0.378231510519981
+    },
+    {
+      "scenario": "ssp245",
+      "group": "amph",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0563596244901419,
+      "b2": 0.101931624114513,
+      "b3": 0.174843676388264,
+      "b4": 0.332084834575653
+    },
+    {
+      "scenario": "ssp585",
+      "group": "amph",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.0540853310376406,
+      "b2": 0.0994028449058533,
+      "b3": 0.171833366155624,
+      "b4": 0.353063404560089
+    },
+    {
+      "scenario": "ssp585",
+      "group": "amph",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0563596244901419,
+      "b2": 0.101931624114513,
+      "b3": 0.174843676388264,
+      "b4": 0.332084834575653
+    },
+    {
+      "scenario": "ssp126",
+      "group": "mam",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.0583590380847454,
+      "b2": 0.105298526585102,
+      "b3": 0.181743860244751,
+      "b4": 0.352016285061836
+    },
+    {
+      "scenario": "ssp126",
+      "group": "mam",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.0562815349549055,
+      "b2": 0.102613810449839,
+      "b3": 0.178764618933201,
+      "b4": 0.375316172838211
+    },
+    {
+      "scenario": "ssp245",
+      "group": "mam",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.0562742166221142,
+      "b2": 0.102636467665434,
+      "b3": 0.179715298116207,
+      "b4": 0.368990302085876
+    },
+    {
+      "scenario": "ssp245",
+      "group": "mam",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.0562815349549055,
+      "b2": 0.102613810449839,
+      "b3": 0.178764618933201,
+      "b4": 0.375316172838211
+    },
+    {
+      "scenario": "ssp585",
+      "group": "mam",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.0536850225180387,
+      "b2": 0.0980086661875248,
+      "b3": 0.170043908059597,
+      "b4": 0.352907821536064
+    },
+    {
+      "scenario": "ssp585",
+      "group": "mam",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.0562815349549055,
+      "b2": 0.102613810449839,
+      "b3": 0.178764618933201,
+      "b4": 0.375316172838211
+    },
+    {
+      "scenario": "ssp126",
+      "group": "mam",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.0584719441831112,
+      "b2": 0.104574803262949,
+      "b3": 0.178848646581173,
+      "b4": 0.342667832970619
+    },
+    {
+      "scenario": "ssp126",
+      "group": "mam",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0543680787086487,
+      "b2": 0.0985419675707817,
+      "b3": 0.171318553388119,
+      "b4": 0.336798593401909
+    },
+    {
+      "scenario": "ssp245",
+      "group": "mam",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.055015766993165,
+      "b2": 0.100909657776356,
+      "b3": 0.177845686674118,
+      "b4": 0.358817622065544
+    },
+    {
+      "scenario": "ssp245",
+      "group": "mam",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0543680787086487,
+      "b2": 0.0985419675707817,
+      "b3": 0.171318553388119,
+      "b4": 0.336798593401909
+    },
+    {
+      "scenario": "ssp585",
+      "group": "mam",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.0532641019672155,
+      "b2": 0.0966025590896606,
+      "b3": 0.167975455522537,
+      "b4": 0.341780632734299
+    },
+    {
+      "scenario": "ssp585",
+      "group": "mam",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0543680787086487,
+      "b2": 0.0985419675707817,
+      "b3": 0.171318553388119,
+      "b4": 0.336798593401909
+    },
+    {
+      "scenario": "ssp126",
+      "group": "bird",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.0576877780258656,
+      "b2": 0.103912755846977,
+      "b3": 0.178942866623402,
+      "b4": 0.342794135212898
+    },
+    {
+      "scenario": "ssp126",
+      "group": "bird",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.0550447665154934,
+      "b2": 0.100941773504019,
+      "b3": 0.17741534858942,
+      "b4": 0.356285110116005
+    },
+    {
+      "scenario": "ssp245",
+      "group": "bird",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.054581930860877,
+      "b2": 0.100390333682299,
+      "b3": 0.176538482308388,
+      "b4": 0.377722546458244
+    },
+    {
+      "scenario": "ssp245",
+      "group": "bird",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.0550447665154934,
+      "b2": 0.100941773504019,
+      "b3": 0.17741534858942,
+      "b4": 0.356285110116005
+    },
+    {
+      "scenario": "ssp585",
+      "group": "bird",
+      "events": "k1",
+      "scheme": "scenario",
+      "b1": 0.0534672793000937,
+      "b2": 0.0976673997938633,
+      "b3": 0.170551985502243,
+      "b4": 0.3509132117033
+    },
+    {
+      "scenario": "ssp585",
+      "group": "bird",
+      "events": "k1",
+      "scheme": "pooled",
+      "b1": 0.0550447665154934,
+      "b2": 0.100941773504019,
+      "b3": 0.17741534858942,
+      "b4": 0.356285110116005
+    },
+    {
+      "scenario": "ssp126",
+      "group": "bird",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.0586685482412577,
+      "b2": 0.10487225651741,
+      "b3": 0.178942866623402,
+      "b4": 0.344337537884712
+    },
+    {
+      "scenario": "ssp126",
+      "group": "bird",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0544231478124857,
+      "b2": 0.0983552411198616,
+      "b3": 0.16976572573185,
+      "b4": 0.33924800157547
+    },
+    {
+      "scenario": "ssp245",
+      "group": "bird",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.0565906539559364,
+      "b2": 0.104367140680552,
+      "b3": 0.185884796082973,
+      "b4": 0.393092975020409
+    },
+    {
+      "scenario": "ssp245",
+      "group": "bird",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0544231478124857,
+      "b2": 0.0983552411198616,
+      "b3": 0.16976572573185,
+      "b4": 0.33924800157547
+    },
+    {
+      "scenario": "ssp585",
+      "group": "bird",
+      "events": "k5",
+      "scheme": "scenario",
+      "b1": 0.053676737472415,
+      "b2": 0.0974570289254189,
+      "b3": 0.171305514872074,
+      "b4": 0.348722785711288
+    },
+    {
+      "scenario": "ssp585",
+      "group": "bird",
+      "events": "k5",
+      "scheme": "pooled",
+      "b1": 0.0544231478124857,
+      "b2": 0.0983552411198616,
+      "b3": 0.16976572573185,
+      "b4": 0.33924800157547
+    }
+  ],
+  "breaks_all": {
+    "present": [1.375, 1.875, 2.375, 3.375],
+    "ssp126_k1": [1.125, 1.375, 1.625, 2.375],
+    "ssp126_k5": [1.125, 1.625, 2.375, 3.375],
+    "ssp245_k1": [1.125, 1.375, 1.625, 2.375],
+    "ssp245_k5": [1.125, 1.625, 2.375, 3.375],
+    "ssp585_k1": [1.125, 1.375, 1.625, 2.375],
+    "ssp585_k5": [1.125, 1.625, 2.375, 3.375]
+  },
+  "files": [
+    {
+      "file": "adj_amph.json",
+      "dir": "data",
+      "mb": 0.23
+    },
+    {
+      "file": "adj_bird.json",
+      "dir": "data",
+      "mb": 0.58
+    },
+    {
+      "file": "adj_mam.json",
+      "dir": "data",
+      "mb": 0.57
+    },
+    {
+      "file": "pas_present.json",
+      "dir": "data",
+      "mb": 1.66
+    },
+    {
+      "file": "pas_ssp126.json",
+      "dir": "data",
+      "mb": 1.59
+    },
+    {
+      "file": "pas_ssp245.json",
+      "dir": "data",
+      "mb": 1.6
+    },
+    {
+      "file": "pas_ssp585.json",
+      "dir": "data",
+      "mb": 1.6
+    },
+    {
+      "file": "summary.json",
+      "dir": "data",
+      "mb": 0.01
+    },
+    {
+      "file": "cur_present_all.pmtiles",
+      "dir": "tiles",
+      "mb": 14.66
+    },
+    {
+      "file": "cur_present_amph.pmtiles",
+      "dir": "tiles",
+      "mb": 4.88
+    },
+    {
+      "file": "cur_present_bird.pmtiles",
+      "dir": "tiles",
+      "mb": 16.5
+    },
+    {
+      "file": "cur_present_mam.pmtiles",
+      "dir": "tiles",
+      "mb": 15.76
+    },
+    {
+      "file": "cur_ssp126_all_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 4.42
+    },
+    {
+      "file": "cur_ssp126_all_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 6.03
+    },
+    {
+      "file": "cur_ssp126_amph_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 0.6
+    },
+    {
+      "file": "cur_ssp126_amph_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 2.58
+    },
+    {
+      "file": "cur_ssp126_bird_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 5.3
+    },
+    {
+      "file": "cur_ssp126_bird_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 6.72
+    },
+    {
+      "file": "cur_ssp126_mam_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 3.97
+    },
+    {
+      "file": "cur_ssp126_mam_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 6.6
+    },
+    {
+      "file": "cur_ssp245_all_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 4.74
+    },
+    {
+      "file": "cur_ssp245_all_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 8.22
+    },
+    {
+      "file": "cur_ssp245_amph_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 0.55
+    },
+    {
+      "file": "cur_ssp245_amph_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 2.52
+    },
+    {
+      "file": "cur_ssp245_bird_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 5.79
+    },
+    {
+      "file": "cur_ssp245_bird_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 9.45
+    },
+    {
+      "file": "cur_ssp245_mam_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 3.76
+    },
+    {
+      "file": "cur_ssp245_mam_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 8.49
+    },
+    {
+      "file": "cur_ssp585_all_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 4.94
+    },
+    {
+      "file": "cur_ssp585_all_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 8.8
+    },
+    {
+      "file": "cur_ssp585_amph_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 0.61
+    },
+    {
+      "file": "cur_ssp585_amph_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 2.56
+    },
+    {
+      "file": "cur_ssp585_bird_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 5.88
+    },
+    {
+      "file": "cur_ssp585_bird_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 10.25
+    },
+    {
+      "file": "cur_ssp585_mam_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 4.12
+    },
+    {
+      "file": "cur_ssp585_mam_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 8.66
+    },
+    {
+      "file": "vec_present_all.pmtiles",
+      "dir": "tiles",
+      "mb": 6.17
+    },
+    {
+      "file": "vec_present_amph.pmtiles",
+      "dir": "tiles",
+      "mb": 7.74
+    },
+    {
+      "file": "vec_present_amph.pmtiles.tmp.mbtiles",
+      "dir": "tiles",
+      "mb": 0.01
+    },
+    {
+      "file": "vec_present_bird.pmtiles",
+      "dir": "tiles",
+      "mb": 28.76
+    },
+    {
+      "file": "vec_present_mam.pmtiles",
+      "dir": "tiles",
+      "mb": 27.09
+    },
+    {
+      "file": "vec_ssp126_all_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 1.7
+    },
+    {
+      "file": "vec_ssp126_all_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 1.48
+    },
+    {
+      "file": "vec_ssp126_amph_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 1
+    },
+    {
+      "file": "vec_ssp126_amph_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 3.92
+    },
+    {
+      "file": "vec_ssp126_bird_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 8.57
+    },
+    {
+      "file": "vec_ssp126_bird_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 11.02
+    },
+    {
+      "file": "vec_ssp126_mam_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 6.27
+    },
+    {
+      "file": "vec_ssp126_mam_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 10.81
+    },
+    {
+      "file": "vec_ssp245_all_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 1.46
+    },
+    {
+      "file": "vec_ssp245_all_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 1.76
+    },
+    {
+      "file": "vec_ssp245_amph_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 0.93
+    },
+    {
+      "file": "vec_ssp245_amph_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 3.77
+    },
+    {
+      "file": "vec_ssp245_bird_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 10.18
+    },
+    {
+      "file": "vec_ssp245_bird_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 17.88
+    },
+    {
+      "file": "vec_ssp245_mam_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 6.3
+    },
+    {
+      "file": "vec_ssp245_mam_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 16.47
+    },
+    {
+      "file": "vec_ssp585_all_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 1.41
+    },
+    {
+      "file": "vec_ssp585_all_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 1.82
+    },
+    {
+      "file": "vec_ssp585_amph_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 0.9
+    },
+    {
+      "file": "vec_ssp585_amph_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 3.61
+    },
+    {
+      "file": "vec_ssp585_bird_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 9.29
+    },
+    {
+      "file": "vec_ssp585_bird_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 23.87
+    },
+    {
+      "file": "vec_ssp585_mam_k1.pmtiles",
+      "dir": "tiles",
+      "mb": 5.92
+    },
+    {
+      "file": "vec_ssp585_mam_k5.pmtiles",
+      "dir": "tiles",
+      "mb": 16.62
+    }
+  ]
+}
